@@ -1,11 +1,11 @@
 ; the finite set of states
-#Q = {0,1,multi,findwri,searcha,writea,accept, accept1, accept2, accept3}
+#Q = {0,1,multi,findwri,searcha,writea,accept,accept1,accept2,accept3,clr,cl,I,L1,L2,L,E,END,G,A,espace,I2,N,P,U,T,0p}
 
 ; the finite set of input symbols
 #S = {a,b,}
 
 ; the complete set of tape symbols
-#G = {c}
+#G = {c,a,b,i,l,_,e,g,n,p,u,t}
 
 ; the start state
 #q0 = 0
@@ -35,6 +35,7 @@ clr _* ** l* cl
 cl a* _* l* cl
 cl b* _* l* cl
 cl _* ** r* I
+
 I _* i* r* L1
 L1 _* l* r* L2
 L2 _* l* r* E

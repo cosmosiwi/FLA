@@ -212,8 +212,12 @@ public:
       handleSyntaxError("input and output size not match");
       return;
     }
-    if (Q.find(state) == Q.end() || Q.find(nextState) == Q.end()) {
-      handleSyntaxError("state not found");
+    if (Q.find(state) == Q.end()) {
+      handleSyntaxError(state);
+      return;
+    }
+    if (Q.find(nextState) == Q.end()) {
+      handleSyntaxError(nextState);
       return;
     }
     delta[make_pair(state, input)] = make_tuple(output, direction, nextState);
@@ -222,7 +226,7 @@ public:
     // cout << input << " " << illegalInput["_"] << endl;
     for (auto s : input) {
       if (illegalInput[std::string(1, s)] == 1) {
-        //cout << std::string(1, s) << endl;
+        // cout << std::string(1, s) << endl;
         return false;
       }
     }
@@ -241,7 +245,9 @@ public:
     bool result = true;
     for (auto s : stack) {
       string input = std::string(1, s);
-      if (gamma.find(input) == gamma.end() && !checkIllegalInput(input)) {
+      //cout << input << (gamma.find(input) == gamma.end()) << endl;
+      if (!checkIllegalInput(input) || (gamma.find(input) == gamma.end() &&
+                                        !(input == "_" || input == "*"))) {
         result = false;
       }
     }
@@ -379,11 +385,11 @@ void TM::run() {
 
     // What we want to do next is to build a valid input that can be used to
     // find the next state Use dfs to find the next state
-    //TODO: optimize the dfs function
+    // TODO: optimize the dfs function
     std::function<bool(string &, int)> dfs = [&](string &currentInput,
                                                  int ptx) {
       if (ptx >= this->n) {
-        //cout << currentInput << " asdf " << endl;
+        // cout << currentInput << " asdf " << endl;
         if (delta[make_pair(currentState, currentInput)] ==
             make_tuple("", "", "")) {
           return false;
@@ -403,14 +409,17 @@ void TM::run() {
     if (verbose == 1)
       printStepLog(currentState, time);
     int ptx = 0;
-    if (finalState.find(currentState) != finalState.end() || !dfs(currentInput, ptx)) {
+    if (finalState.find(currentState) != finalState.end() ||
+        !dfs(currentInput, ptx)) {
       string result = tape[0];
       result = result.substr(result.find_first_not_of("_"));
       result = result.substr(0, result.find_last_not_of("_") + 1);
-      for (auto s :result){
-        //cout << s << " ++ " << endl;
-        if (s == '_')cout << ' ';
-        else cout << s;
+      for (auto s : result) {
+        // cout << s << " ++ " << endl;
+        if (s == '_')
+          cout << ' ';
+        else
+          cout << s;
       }
       cout << endl;
       if (verbose)
