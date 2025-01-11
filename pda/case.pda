@@ -1,0 +1,27 @@
+; This example program checks if the input string is in \(L = \{a^nb^n | n \ge 1\}\).
+; Input: a string of a's and b's, e.g. 'aabb'
+
+; the finite set of states
+#Q = {q0,accept}
+
+; the finite set of input symbols
+#S = {(,)}
+
+; the complete set of stack symbols
+#G = {0,1,z}
+
+; the start state
+#q0 = q0
+
+; the start stack symbol
+#z0 = z
+
+; the set of final states
+#F = {accept}
+
+; the transition functions
+
+q0 ( z q0 1z
+q0 ( 1 q0 11
+q0 ) 1 q0 _
+q0 _ z accept _
