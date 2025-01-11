@@ -40,14 +40,14 @@ public:
   void setInput(string input) { this->input = input; };
   void addStateSet(string state) { Q.insert(state); };
   void addInputSet(string input) {
-    if (!checkAddInput(input)){
+    if (!checkAddInput(input)) {
       handleSyntaxError("input is illegal");
       return;
     }
     sigma.insert(input);
   };
   void addStackSet(string stack) {
-    if (!checkAddStatck(stack)){
+    if (!checkAddStatck(stack)) {
       handleSyntaxError("stack is illegal");
       return;
     }
@@ -185,14 +185,14 @@ public:
   int getN() { return n; };
   void addStateSet(string state) { Q.insert(state); };
   void addInputSet(string input) {
-    if (!checkAddInput(input)){
+    if (!checkAddInput(input)) {
       handleSyntaxError("input is illegal");
       return;
     }
     sigma.insert(input);
   };
   void addStackSet(string stack) {
-    if(!checkAddStack(stack)){
+    if (!checkAddStack(stack)) {
       handleSyntaxError("stack is illegal");
       return;
     }
@@ -203,14 +203,15 @@ public:
   void addFinalStateSet(string state) { finalState.insert(state); };
   void addTransition(string state, string input, string output,
                      string direction, string nextState) {
-    if(!checkAddStackInTransition(output) || !checkAddStackInTransition(input)){
+    if (!checkAddStackInTransition(output) ||
+        !checkAddStackInTransition(input)) {
       handleSyntaxError(output + " " + input);
       return;
     }
     delta[make_pair(state, input)] = make_tuple(output, direction, nextState);
   };
   bool checkIllegalInput(string input) {
-    //cout << input << " " << illegalInput["_"] << endl;
+    // cout << input << " " << illegalInput["_"] << endl;
     for (auto s : input) {
       if (illegalInput[std::string(1, s)] == 1) {
         cout << std::string(1, s) << endl;
@@ -232,7 +233,8 @@ public:
     bool result = true;
     for (auto s : stack) {
       string input = std::string(1, s);
-      //cout << input << (gamma.find(input) == gamma.end() ) << (checkIllegalInput(input)) <<endl;
+      // cout << input << (gamma.find(input) == gamma.end() ) <<
+      // (checkIllegalInput(input)) <<endl;
       if (gamma.find(input) == gamma.end() && !checkIllegalInput(input)) {
         result = false;
       }
@@ -368,15 +370,30 @@ void TM::run() {
     }
     tuple<string, string, string> next;
     // ****** -> a***** -> ab**** -> abc*** -> abcd** -> abcde* -> abcdef
-    int ptx = 0;
-    while (delta[make_pair(currentState, currentInput)] ==
-           make_tuple("", "", "")) {
-      currentInput[ptx] = tape[ptx][pos[ptx]];
-      ptx++;
+
+    // What we want to do next is to build a valid input that can be used to
+    // find the next state Use dfs to find the next state
+    //TODO: optimize the dfs function
+    std::function<bool(string &, int)> dfs = [&](string &currentInput,
+                                                 int ptx) {
       if (ptx >= this->n) {
-        break;
+        cout << currentInput << " asdf " << endl;
+        if (delta[make_pair(currentState, currentInput)] ==
+            make_tuple("", "", "")) {
+          return false;
+        }
+        return true;
       }
-    }
+      currentInput[ptx] = tape[ptx][pos[ptx]];
+      if (dfs(currentInput, ptx + 1)) {
+        return true;
+      }
+      currentInput[ptx] = '*';
+      if (dfs(currentInput, ptx + 1)) {
+        return true;
+      }
+      return false;
+    };
     if (verbose == 1)
       printStepLog(currentState, time);
     if (finalState.find(currentState) != finalState.end()) {
@@ -388,11 +405,12 @@ void TM::run() {
         cout << "===============END===============" << endl;
       break;
     }
-    next = delta[make_pair(currentState, currentInput)];
-    if (next == make_tuple("", "", "")) {
-      cout << "illegal input" << endl;
+    int ptx = 0;
+    if (!dfs(currentInput, ptx)) {
+      cout << "illegal input" << " " << currentInput << endl;
       exit(1);
     }
+    next = delta[make_pair(currentState, currentInput)];
     string output = get<0>(next);
     string direction = get<1>(next);
     string nextState = get<2>(next);
