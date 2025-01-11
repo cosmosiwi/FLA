@@ -1,5 +1,5 @@
 ; the finite set of states
-#Q = {0,1,multi,findwri,searcha,writea,accept}
+#Q = {0,1,multi,findwri,searcha,writea,accept, accept1, accept2, accept3}
 
 ; the finite set of input symbols
 #S = {a,b}
@@ -14,7 +14,7 @@
 #B = _
 
 ; the set of final states
-#F = {accept}
+#F = {accept3}
 
 ; the number of tapes
 #N = 2
@@ -42,4 +42,19 @@ searcha a_ ** ** writea
 
 ;State writea
 writea a_ ac lr writea
-writea __ ** r* 0
+writea __ ** r* 0p
+
+;State 0p
+0p a* ** r* 0p
+0p b* ** r* 1
+0p _* ** ll accept
+
+;State accept
+accept _* ** ** accept1
+accept a* ** l* accept
+
+accept1 *_ ** rr accept2
+accept1 *c ** *l accept1
+
+accept2 *c c_ rr accept2
+accept2 *_ __ ** accept3
