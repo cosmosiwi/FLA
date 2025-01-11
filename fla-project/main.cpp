@@ -208,13 +208,21 @@ public:
       handleSyntaxError(output + " " + input);
       return;
     }
+    if (input.size() != n || output.size() != n) {
+      handleSyntaxError("input and output size not match");
+      return;
+    }
+    if (Q.find(state) == Q.end() || Q.find(nextState) == Q.end()) {
+      handleSyntaxError("state not found");
+      return;
+    }
     delta[make_pair(state, input)] = make_tuple(output, direction, nextState);
   };
   bool checkIllegalInput(string input) {
     // cout << input << " " << illegalInput["_"] << endl;
     for (auto s : input) {
       if (illegalInput[std::string(1, s)] == 1) {
-        cout << std::string(1, s) << endl;
+        //cout << std::string(1, s) << endl;
         return false;
       }
     }
@@ -233,8 +241,6 @@ public:
     bool result = true;
     for (auto s : stack) {
       string input = std::string(1, s);
-      // cout << input << (gamma.find(input) == gamma.end() ) <<
-      // (checkIllegalInput(input)) <<endl;
       if (gamma.find(input) == gamma.end() && !checkIllegalInput(input)) {
         result = false;
       }
@@ -377,7 +383,7 @@ void TM::run() {
     std::function<bool(string &, int)> dfs = [&](string &currentInput,
                                                  int ptx) {
       if (ptx >= this->n) {
-        cout << currentInput << " asdf " << endl;
+        //cout << currentInput << " asdf " << endl;
         if (delta[make_pair(currentState, currentInput)] ==
             make_tuple("", "", "")) {
           return false;
@@ -396,19 +402,20 @@ void TM::run() {
     };
     if (verbose == 1)
       printStepLog(currentState, time);
-    if (finalState.find(currentState) != finalState.end()) {
+    int ptx = 0;
+    if (finalState.find(currentState) != finalState.end() || !dfs(currentInput, ptx)) {
       string result = tape[0];
       result = result.substr(result.find_first_not_of("_"));
       result = result.substr(0, result.find_last_not_of("_") + 1);
-      cout << result << endl;
+      for (auto s :result){
+        //cout << s << " ++ " << endl;
+        if (s == '_')cout << ' ';
+        else cout << s;
+      }
+      cout << endl;
       if (verbose)
         cout << "===============END===============" << endl;
       break;
-    }
-    int ptx = 0;
-    if (!dfs(currentInput, ptx)) {
-      cout << "illegal input" << " " << currentInput << endl;
-      exit(1);
     }
     next = delta[make_pair(currentState, currentInput)];
     string output = get<0>(next);
@@ -734,6 +741,7 @@ TM parseToTM(string filename, string input) {
         args[argIndex] =
             line.substr(last_space + 1, line.size() - last_space - 1);
         if (keyCount != 4) {
+          cout << line << endl;
           tm.handleSyntaxError("5 arguments expected");
         }
         handleTransition(args[0], args[1], args[2], args[3], args[4], tm);
