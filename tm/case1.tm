@@ -2,7 +2,7 @@
 #Q = {0,1,multi,findwri,searcha,writea,accept, accept1, accept2, accept3}
 
 ; the finite set of input symbols
-#S = {a,b}
+#S = {a,b,}
 
 ; the complete set of tape symbols
 #G = {c}
@@ -28,6 +28,26 @@
 ;State 1: find b
 1 b* ** r* 1
 1 _* ** l* multi
+1 a* ** ** clr
+clr a* ** r* clr
+clr b* ** r* clr
+clr _* ** l* cl
+cl a* _* l* cl
+cl b* _* l* cl
+cl _* ** r* I
+I _* i* r* L1
+L1 _* l* r* L2
+L2 _* l* r* E
+E _* e* r* G
+G _* g* r* A
+A _* a* r* L
+L _* l* r* espace
+espace _* ** r* I2
+I2 _* i* r* N
+N _* n* r* P
+P _* p* r* U
+U _* u* r* T
+T _* t* ** END
 
 ;State multi
 multi b* _* l* findwri
