@@ -261,8 +261,8 @@ public:
     exit(1);
   };
   void printStepLog(string state, int step) {
-    cout << "State\t:" << state << endl;
-    cout << "Step\t:" << step << endl;
+    cout << "State\t: " << state << endl;
+    cout << "Step\t: " << step << endl;
     auto fn = [](int n) {
       if (n < 10)
         return;
@@ -800,7 +800,11 @@ void parseArguments(int argc, char *argv[]) {
       printHelpInfo();
       exit(0);
     } else if (arg == "-v" || arg == "--verbose") {
+      if(verbose == 1) handleError();
       verbose = 1;
+      if (i == argc - 1) {
+        handleError();
+      }
     } else {
       if (i != argc - 2) {
         handleError();

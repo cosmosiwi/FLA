@@ -24,6 +24,7 @@
 ; State 0: find a
 0 a_ ** r* 0
 0 b_ ** r* 1
+0 __ ** ** clr
 
 ;State 1: find b
 1 b* ** r* 1
