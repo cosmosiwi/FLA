@@ -6,7 +6,8 @@
 #include <tuple>
 #include <unordered_map>
 #include <utility>
-
+#include <vector>
+#include <functional> 
 using namespace std;
 
 int verbose = 0;
@@ -174,7 +175,7 @@ int PDA::run() {
                        ? currentStack.substr(1)
                        : nextState.second + currentStack.substr(1);
     currentState = nextState.first;
-    if (nextState == make_pair("", "")) {
+    if (nextState == make_pair(string(""), string(""))) {
       return 0;
     }
     if (finalState.find(currentState) != finalState.end()) {
@@ -279,7 +280,7 @@ public:
     bool result = true;
     for (auto s : stack) {
       string input = std::string(1, s);
-      // cout << input << (gamma.find(input) == gamma.end()) << endl;
+      //cout << input << (gamma.find(input) == gamma.end()) << endl;
       if (!checkIllegalInput(input) || (gamma.find(input) == gamma.end() &&
                                         !(input == "_" || input == "*"))) {
         result = false;

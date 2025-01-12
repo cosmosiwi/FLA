@@ -5,7 +5,7 @@
 #S = {1}
 
 ; the complete set of tape symbols
-#G = {a,b,1,#,f,a,l,s,e,t,r,u}
+#G = {a,b,c,1,#,f,a,l,s,e,t,r,u}
 
 ; the start state
 #q0 = 02
