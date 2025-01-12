@@ -39,11 +39,14 @@ public:
     delta.clear();
   };
   void setInput(string input) { this->input = input; };
-  void addStateSet(string state) { 
+  void addStateSet(string state) {
+    illegalInput["_"] = 0; 
     if(!checkIllegalInput(state)){
+      illegalInput["_"] = 1;
       handleSyntaxError(state);
       return;
     }
+    illegalInput["_"] = 1;
     Q.insert(state); 
   };
   void addInputSet(string input) {
@@ -63,10 +66,13 @@ public:
   void addInitialState(string state) { initialState = state; };
   void addInitialStack(string stack) { initialStack = stack; };
   void addFinalStateSet(string state) {
+    illegalInput["_"] = 0;
     if(!checkIllegalInput(state)){
+      illegalInput["_"] = 1;
       handleSyntaxError(state);
       return;
     } 
+    illegalInput["_"] = 1;
     finalState.insert(state); 
   };
   void addTransition(string state, string input, string stack, string nextState,
@@ -231,10 +237,13 @@ public:
   };
   int getN() { return n; };
   void addStateSet(string state) { 
+    illegalInput["_"] = 0;
     if (!checkIllegalInput(state)){
+      illegalInput["_"] = 1;
       handleSyntaxError(state);
       return;
     }
+    illegalInput["_"] = 1;
     Q.insert(state); 
   };
   void addInputSet(string input) {
@@ -254,10 +263,13 @@ public:
   void addInitialState(string state) { initialState = state; };
   void addBlanket(string stack) { blanket = stack; };
   void addFinalStateSet(string state) { 
+    illegalInput["_"] = 0;
     if (!checkIllegalInput(state)){
+      illegalInput["_"] = 1;
       handleSyntaxError(state);
       return;
     }
+    illegalInput["_"] = 1;
     finalState.insert(state); 
   };
   void addTransition(string state, string input, string output,
@@ -316,7 +328,7 @@ public:
   }
   void run();
   void handleSyntaxError(string message) {
-    std::cerr << "syntax error " << std::endl;
+    std::cerr << "syntax error " << message << std::endl;
     exit(1);
   };
   void printStepLog(string state, int step) {
@@ -620,7 +632,7 @@ PDA parseToPDA(string filename, string input) {
     while (line[line.size() - 1] == ' ') {
       line = line.substr(0, line.size() - 1);
     }
-    // cout << line << endl;
+
     for (int i = 0; i < line.size(); i++) {
       if (line[i] == ' ')
         continue;
