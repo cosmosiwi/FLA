@@ -39,7 +39,13 @@ public:
     delta.clear();
   };
   void setInput(string input) { this->input = input; };
-  void addStateSet(string state) { Q.insert(state); };
+  void addStateSet(string state) { 
+    if(!checkIllegalInput(state)){
+      handleSyntaxError(state);
+      return;
+    }
+    Q.insert(state); 
+  };
   void addInputSet(string input) {
     if (!checkAddInput(input)) {
       handleSyntaxError("input is illegal");
@@ -56,14 +62,20 @@ public:
   };
   void addInitialState(string state) { initialState = state; };
   void addInitialStack(string stack) { initialStack = stack; };
-  void addFinalStateSet(string state) { finalState.insert(state); };
+  void addFinalStateSet(string state) {
+    if(!checkIllegalInput(state)){
+      handleSyntaxError(state);
+      return;
+    } 
+    finalState.insert(state); 
+  };
   void addTransition(string state, string input, string stack, string nextState,
                      string nextStack) {
     delta[make_tuple(state, input, stack)] = make_pair(nextState, nextStack);
   };
   int run(); // -1 illegal input, 0 not accepted, 1 accepted
   void handleSyntaxError(string message) {
-    std::cerr << "syntax error : " << message << std::endl;
+    std::cerr << "syntax error : " << std::endl;
     exit(1);
   };
   bool checkIllegalInput(string input) {
@@ -218,7 +230,13 @@ public:
     pos = vector<int>(n, 0);
   };
   int getN() { return n; };
-  void addStateSet(string state) { Q.insert(state); };
+  void addStateSet(string state) { 
+    if (!checkIllegalInput(state)){
+      handleSyntaxError(state);
+      return;
+    }
+    Q.insert(state); 
+  };
   void addInputSet(string input) {
     if (!checkAddInput(input)) {
       handleSyntaxError("input is illegal");
@@ -235,7 +253,13 @@ public:
   };
   void addInitialState(string state) { initialState = state; };
   void addBlanket(string stack) { blanket = stack; };
-  void addFinalStateSet(string state) { finalState.insert(state); };
+  void addFinalStateSet(string state) { 
+    if (!checkIllegalInput(state)){
+      handleSyntaxError(state);
+      return;
+    }
+    finalState.insert(state); 
+  };
   void addTransition(string state, string input, string output,
                      string direction, string nextState) {
     if (!checkAddStackInTransition(output) ||
@@ -292,7 +316,7 @@ public:
   }
   void run();
   void handleSyntaxError(string message) {
-    std::cerr << "syntax error " << message << std::endl;
+    std::cerr << "syntax error " << std::endl;
     exit(1);
   };
   void printStepLog(string state, int step) {
@@ -795,7 +819,7 @@ TM parseToTM(string filename, string input) {
         args[argIndex] =
             line.substr(last_space + 1, line.size() - last_space - 1);
         if (keyCount != 4) {
-          cout << line << endl;
+          //cout << line << endl;
           tm.handleSyntaxError("5 arguments expected");
         }
         handleTransition(args[0], args[1], args[2], args[3], args[4], tm);

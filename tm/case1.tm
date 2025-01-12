@@ -1,5 +1,5 @@
 ; the finite set of states
-#Q = {0,1,multi,findwri,searcha,writea,accept,accept1,accept2,accept3,clr,cl,I,L1,L2,L,E,END,G,A,espace,I2,N,P,U,T,0p}
+#Q = {0,1,multi,findwri,searcha,writea,accept,accept1,accept2,accept3,clr,cl,I,L1,L2,L,E,END,G,A,espace,I2,N,P,U,T,0p,}
 
 ; the finite set of input symbols
 #S = {a,b,}
