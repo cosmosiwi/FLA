@@ -97,6 +97,21 @@ public:
     }
     return true;
   };
+  void printLog(string currentState, string currentStack, int step) {
+    cout << "Input\t: " << this->input << endl;
+    cout << "Current\t: ";
+    for (int i = 0; i < input.size(); i++) {
+      if (i == step) {
+        cout << "^";
+      } else {
+        cout << " ";
+      }
+    }
+    cout << endl;
+    cout << "State\t: " << currentState << endl;
+    cout << "Stack\t: " << currentStack << endl;
+    cout << "---------------------------------" << endl;
+  }
 
 private:
   set<string> Q;     // set of states
@@ -128,13 +143,31 @@ int PDA::run() {
   for (auto s : this->input) {
     string input = std::string(1, s);
     if (illegalInput[input] || this->sigma.find(input) == this->sigma.end()) {
+      if(verbose){
+        cout << "illegal input : " << input << endl;
+        cout << "Input\t: " << this->input << endl;
+        cout << "Index\t: ";
+        for (auto c : this->input) {
+          if (c == s) {
+            cout << "^";
+          } else {
+            cout << " ";
+          }
+        }
+        cout << endl;
+        cout << "------------------------" << endl;
+      }
       return -1;
     }
   }
   this->input += "_";
+  int step = 0;
   for (auto s : this->input) {
     string input = std::string(1, s);
     string top = currentStack.substr(0, 1);
+    if (verbose) {
+      printLog(currentState, currentStack, step);
+    }
     pair<string, string> nextState =
         delta[make_tuple(currentState, input, top)];
     currentStack = nextState.second == "_"
@@ -147,6 +180,7 @@ int PDA::run() {
     if (finalState.find(currentState) != finalState.end()) {
       return 1;
     }
+    step++;
   }
 }
 
@@ -245,7 +279,7 @@ public:
     bool result = true;
     for (auto s : stack) {
       string input = std::string(1, s);
-      //cout << input << (gamma.find(input) == gamma.end()) << endl;
+      // cout << input << (gamma.find(input) == gamma.end()) << endl;
       if (!checkIllegalInput(input) || (gamma.find(input) == gamma.end() &&
                                         !(input == "_" || input == "*"))) {
         result = false;
@@ -557,9 +591,9 @@ PDA parseToPDA(string filename, string input) {
   while (getline(file, line)) {
     if (line[line.find_first_of(";")] == ';') {
       line = line.substr(0, line.find_first_of(";"));
-      while (line[line.size() - 1] == ' ') {
-        line = line.substr(0, line.size() - 1);
-      }
+    }
+    while (line[line.size() - 1] == ' ') {
+      line = line.substr(0, line.size() - 1);
     }
     // cout << line << endl;
     for (int i = 0; i < line.size(); i++) {
@@ -599,9 +633,14 @@ PDA parseToPDA(string filename, string input) {
         string args[5];
         int argIndex = 0;
         for (int j = 0; j < line.size(); j++) {
+          int oldJ = j;
           if (line[j] == ' ') {
+            while(line[j] == ' ') {
+              j++;
+            }
+            j--;
             keyCount++;
-            args[argIndex] = line.substr(last_space + 1, j - last_space - 1);
+            args[argIndex] = line.substr(last_space + 1, oldJ - last_space - 1);
             last_space = j;
             argIndex++;
           }
@@ -690,9 +729,9 @@ TM parseToTM(string filename, string input) {
   while (getline(file, line)) {
     if (line[line.find_first_of(";")] == ';') {
       line = line.substr(0, line.find_first_of(";"));
-      while (line[line.size() - 1] == ' ') {
-        line = line.substr(0, line.size() - 1);
-      }
+    }
+    while (line[line.size() - 1] == ' ') {
+      line = line.substr(0, line.size() - 1);
     }
     // cout << line << endl;
     for (int i = 0; i < line.size(); i++) {
@@ -740,9 +779,14 @@ TM parseToTM(string filename, string input) {
         string args[5];
         int argIndex = 0;
         for (int j = 0; j < line.size(); j++) {
+          int oldJ = j;
           if (line[j] == ' ') {
+            while(line[j] == ' ') {
+              j++;
+            }
+            j--;
             keyCount++;
-            args[argIndex] = line.substr(last_space + 1, j - last_space - 1);
+            args[argIndex] = line.substr(last_space + 1, oldJ - last_space - 1);
             last_space = j;
             argIndex++;
           }
@@ -800,7 +844,8 @@ void parseArguments(int argc, char *argv[]) {
       printHelpInfo();
       exit(0);
     } else if (arg == "-v" || arg == "--verbose") {
-      if(verbose == 1) handleError();
+      if (verbose == 1)
+        handleError();
       verbose = 1;
       if (i == argc - 1) {
         handleError();
